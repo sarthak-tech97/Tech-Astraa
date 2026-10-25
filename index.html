@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tech Astraa — AI Automation, Dashboards & Animated Web</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Space Grotesk, Playfair Display, Instrument Serif, Plus Jakarta Sans, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            icesilver: {
+              DEFAULT: '#DDE3E8',
+              light: '#ECF0F3',
+              glass: '#E8EEF2',
+              deep: '#CFD7DE'
+            },
+            aubergine: {
+              dark: '#1E071B',
+              DEFAULT: '#3A0F34',
+              muted: '#522B4C',
+              soft: '#6B3F64'
+            },
+            marigold: {
+              light: '#FFAE19',
+              DEFAULT: '#FF9E00',
+              deep: '#EAAA00'
+            }
+          },
+          fontFamily: {
+            display: ['Space Grotesk', 'sans-serif'],
+            serif: ['Playfair Display', 'Instrument Serif', 'serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* ==========================================================================
+       STRICT UNIFIED FROSTED ICE-SILVER PALETTE (ZERO BLUE / ZERO DARK BOXES)
+       Base Canvas: Soft Ice Silver (#DDE3E8 -> #ECF0F3) + Warm Marigold/Aubergine Auras
+       All Cards & Previews: Frosted Ice-Silver Pearl Glass + Marigold Mixer Glow
+       Typography: Deep Aubergine (#3A0F34) & Muted Aubergine (#522B4C)
+       Surgical Accents: Marigold (#FF9E00 & #EAAA00)
+       ========================================================================== */
+    :root {
+      --bg-canvas: #DDE3E8;
+      --text-main: #3A0F34;
+      --text-sub: #522B4C;
+      --card-glass: rgba(255, 255, 255, 0.78);
+      --card-border: rgba(58, 15, 52, 0.13);
+      --marigold: #FF9E00;
+      --marigold-gold: #EAAA00;
+      --grid-line: rgba(58, 15, 52, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    ::selection {
+      background: #FF9E00;
+      color: #3A0F34;
+    }
+
+    body {
+      background-color: var(--bg-canvas);
+      background-image:
+        radial-gradient(circle at 14% 8%, rgba(255, 158, 0, 0.14) 0%, transparent 38%),
+        radial-gradient(circle at 86% 22%, rgba(58, 15, 52, 0.07) 0%, transparent 42%),
+        radial-gradient(circle at 50% 60%, rgba(255, 158, 0, 0.11) 0%, transparent 50%),
+        linear-gradient(180deg, #ECF0F3 0%, #DDE3E8 52%, #E5EAEE 100%);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+      margin: 0;
+    }
+
+    /* Kinetic Editorial Vertical Grid Lines + Ambient Marigold Shimmer */
+    .editorial-grid {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 0.75rem;
+    }
+
+    @media (min-width: 768px) {
+      .editorial-grid {
+        grid-template-columns: repeat(6, 1fr);
+        padding: 0 1.5rem;
+      }
+    }
+
+    .editorial-col {
+      position: relative;
+      border-left: 1px solid var(--grid-line);
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .editorial-col:last-child {
+      border-right: 1px solid var(--grid-line);
+    }
+
+    .marigold-beam {
+      position: absolute;
+      top: -160px;
+      left: -1px;
+      width: 2px;
+      height: 130px;
+      background: linear-gradient(180deg, transparent, rgba(255, 158, 0, 0.8), rgba(58, 15, 52, 0.35), transparent);
+      animation: beamSlide 9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      will-change: transform;
+    }
+
+    .editorial-col:nth-child(2) .marigold-beam { animation-delay: 2.1s; animation-duration: 10.2s; }
+    .editorial-col:nth-child(3) .marigold-beam { animation-delay: 4.5s; animation-duration: 11s; }
+    .editorial-col:nth-child(4) .marigold-beam { animation-delay: 1.2s; animation-duration: 8.6s; }
+    .editorial-col:nth-child(5) .marigold-beam { animation-delay: 3.4s; animation-duration: 9.8s; }
+
+    @keyframes beamSlide {
+      0% { transform: translateY(-160px); opacity: 0; }
+      15% { opacity: 0.9; }
+      85% { opacity: 0.9; }
+      100% { transform: translateY(112vh); opacity: 0; }
+    }
+
+    /* ==========================================================================
+       1. MOBILE-FIRST TOP NAVBAR & CAPSULE LOGO ("TECH Astraa")
+       ========================================================================== */
+    .astraa-capsule-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #230820;
+      border: 1px solid rgba(255, 158, 0, 0.45);
+      padding: 0.4rem 0.9rem;
+      border-radius: 9999px;
+      box-shadow: 0 6px 18px rgba(58, 15, 52, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+    }
+
+    @media (min-width: 640px) {
+      .astraa-capsule-logo {
+        gap: 0.65rem;
+        padding: 0.48rem 1.15rem;
+      }
+    }
+
+    .astraa-capsule-logo:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(58, 15, 52, 0.25), 0 0 14px rgba(255, 158, 0, 0.3);
+    }
+
+    .logo-marigold-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 9999px;
+      background: #FF9E00;
+      box-shadow: 0 0 10px 2px rgba(255, 158, 0, 0.85);
+      animation: dotPulse 2.2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes dotPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 7px 1px rgba(255, 158, 0, 0.7); }
+      50% { transform: scale(1.24); box-shadow: 0 0 14px 3px rgba(255, 158, 0, 0.98); }
+    }
+
+    .logo-stylized-astraa {
+      font-family: 'Playfair Display', 'Instrument Serif', serif;
+      font-style: italic;
+      font-weight: 600;
+      font-size: 1.08rem;
+      line-height: 1;
+      letter-spacing: 0.02em;
+      background: linear-gradient(120deg, #FFAE19 0%, #FF9E00 55%, #FDE68A 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    @media (min-width: 640px) {
+      .logo-stylized-astraa {
+        font-size: 1.25rem;
+      }
+    }
+
+    /* ==========================================================================
+       2. EDITORIAL TYPOGRAPHY & AUBERGINE-MARIGOLD MIXER SERIF WORDS
+       ========================================================================== */
+    .hero-headline {
+      font-size: clamp(2.1rem, 6.8vw, 4.7rem);
+      line-height: 1.07;
+      letter-spacing: -0.025em;
+      color: #3A0F34;
+    }
+
+    .word-mask {
+      display: inline-block;
+      overflow: hidden;
+      vertical-align: bottom;
+      padding-bottom: 0.06em;
+    }
+
+    .word-inner {
+      display: inline-block;
+      transform: translateY(112%);
+      opacity: 0;
+      transition: transform 0.82s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.55s ease;
+    }
+
+    body.is-loaded .word-inner {
+      transform: translateY(0%);
+      opacity: 1;
+    }
+
+    /* Signature Editorial Mixer Word ("Scale", "Calling", "Automation", "Build", "automated") */
+    .serif-mixer-word {
+      font-family: 'Playfair Display', 'Instrument Serif', serif;
+      font-style: italic;
+      font-weight: 600;
+      padding: 0 0.06em;
+      background: linear-gradient(115deg, #3A0F34 5%, #C2410C 48%, #FF9E00 95%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 4px 12px rgba(234, 170, 0, 0.2));
+    }
+
+    /* ==========================================================================
+       SLIDING ARROW BUTTONS + TOUCH RIPPLE
+       ========================================================================== */
+    .btn-marigold {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      background: linear-gradient(135deg, #FFAE19 0%, #FF9E00 65%, #EAAA00 100%);
+      color: #230820;
+      font-weight: 700;
+      padding: 0.84rem 1.55rem;
+      border-radius: 9999px;
+      border: 1px solid rgba(58, 15, 52, 0.15);
+      box-shadow: 0 8px 22px rgba(234, 170, 0, 0.34), inset 0 1px 1px rgba(255, 255, 255, 0.65);
+      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .btn-marigold:hover {
+      box-shadow: 0 12px 28px rgba(234, 170, 0, 0.48), 0 6px 14px rgba(58, 15, 52, 0.12);
+      transform: translateY(-2px);
+    }
+
+    .btn-marigold .arrow-slide,
+    .btn-aubergine-outline .arrow-slide,
+    .card-deploy-link .arrow-slide {
+      display: inline-block;
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .btn-marigold:hover .arrow-slide,
+    .btn-aubergine-outline:hover .arrow-slide,
+    .card-deploy-link:hover .arrow-slide {
+      transform: translateX(5px);
+    }
+
+    .btn-aubergine-outline {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      background: rgba(255, 255, 255, 0.78);
+      color: #3A0F34;
+      border: 1px solid rgba(58, 15, 52, 0.22);
+      font-weight: 600;
+      padding: 0.84rem 1.45rem;
+      border-radius: 9999px;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .btn-aubergine-outline:hover {
+      border-color: #FF9E00;
+      background: rgba(255, 250, 240, 0.95);
+      transform: translateY(-2px);
+    }
+
+    .ripple-wave {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: rippleEffect 0.6s linear;
+      background-color: rgba(255, 255, 255, 0.55);
+      pointer-events: none;
+    }
+
+    @keyframes rippleEffect {
+      to { transform: scale(3.8); opacity: 0; }
+    }
+
+    /* ==========================================================================
+       3. FROSTED ICE-SILVER PEARL GLASS CARDS + MARIGOLD/AUBERGINE MIXER GLOW
+       ========================================================================== */
+    .service-card {
+      position: relative;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.84) 0%, rgba(238, 242, 245, 0.78) 58%, rgba(255, 248, 236, 0.8) 100%);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      color: #3A0F34;
+      border: 1px solid rgba(58, 15, 52, 0.13);
+      border-radius: 1.35rem;
+      padding: 1.35rem;
+      transition: transform 0.28s ease-out, border-color 0.35s ease, box-shadow 0.35s ease;
+      overflow: hidden;
+      box-shadow:
+        0 14px 36px -12px rgba(58, 15, 52, 0.09),
+        inset 0 1px 0 rgba(255, 255, 255, 0.92);
+      will-change: transform;
+    }
+
+    @media (min-width: 640px) {
+      .service-card {
+        padding: 1.95rem;
+        border-radius: 1.6rem;
+      }
+    }
+
+    /* Warm Marigold + Aubergine Mixer Corner Aura inside Every Frosted Card */
+    .service-card::after {
+      content: '';
+      position: absolute;
+      top: -55px;
+      right: -55px;
+      width: 175px;
+      height: 175px;
+      border-radius: 9999px;
+      background: radial-gradient(circle, rgba(255, 158, 0, 0.24) 0%, rgba(58, 15, 52, 0.06) 55%, transparent 75%);
+      pointer-events: none;
+      transition: transform 0.45s ease, opacity 0.45s ease;
+      opacity: 0.85;
+    }
+
+    /* Interactive Cursor Spotlight on Desktop */
+    .service-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        390px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+        rgba(255, 158, 0, 0.16),
+        rgba(58, 15, 52, 0.04) 45%,
+        transparent 75%
+      );
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
+    }
+
+    .service-card:hover::before {
+      opacity: 1;
+    }
+
+    .service-card:hover::after {
+      transform: scale(1.24);
+      opacity: 1;
+    }
+
+    .service-card:hover {
+      border-color: rgba(234, 170, 0, 0.65);
+      box-shadow:
+        0 20px 44px -14px rgba(58, 15, 52, 0.14),
+        0 0 24px rgba(255, 158, 0, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.96);
+    }
+
+    .card-icon-frame {
+      width: 2.8rem;
+      height: 2.8rem;
+      border-radius: 0.82rem;
+      background: linear-gradient(135deg, rgba(255, 158, 0, 0.22) 0%, rgba(58, 15, 52, 0.08) 100%);
+      border: 1px solid rgba(234, 170, 0, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3A0F34;
+      box-shadow: 0 4px 12px rgba(234, 170, 0, 0.15);
+      transition: transform 0.35s cubic-bezier(0.22, 1.35, 0.36, 1), background 0.3s ease;
+    }
+
+    .service-card:hover .card-icon-frame {
+      transform: scale(1.08) rotate(-4deg);
+      background: linear-gradient(135deg, #FFAE19 0%, #FF9E00 100%);
+      color: #230820;
+      border-color: #FF9E00;
+    }
+
+    /* Light Frosted Warm Marigold/Aubergine Pill Badge (No Dark Black Box) */
+    .card-number-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      padding: 0.32rem 0.8rem;
+      border-radius: 9999px;
+      background: linear-gradient(135deg, rgba(255, 158, 0, 0.16) 0%, rgba(58, 15, 52, 0.07) 100%);
+      border: 1px solid rgba(234, 170, 0, 0.5);
+      color: #3A0F34;
+      box-shadow: 0 2px 8px rgba(234, 170, 0, 0.12);
+    }
+
+    /* Rectangular Floating Status Bubbles Inside Cards */
+    @keyframes rectFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-3.5px); }
+    }
+
+    .rect-status-bubble {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.42rem;
+      padding: 0.35rem 0.72rem;
+      border-radius: 0.55rem;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(58, 15, 52, 0.13);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.69rem;
+      font-weight: 500;
+      color: #3A0F34;
+      box-shadow: 0 2px 8px rgba(58, 15, 52, 0.04);
+      animation: rectFloat 3.6s ease-in-out infinite;
+      transition: all 0.28s ease;
+    }
+
+    .rect-status-bubble:nth-child(2) { animation-delay: 0.6s; }
+    .rect-status-bubble:nth-child(3) { animation-delay: 1.2s; }
+
+    .service-card:hover .rect-status-bubble {
+      border-color: rgba(234, 170, 0, 0.6);
+      background: rgba(255, 251, 242, 0.96);
+    }
+
+    .marigold-dot-sm {
+      width: 6px;
+      height: 6px;
+      border-radius: 9999px;
+      background: #FF9E00;
+      box-shadow: 0 0 7px rgba(255, 158, 0, 0.9);
+      flex-shrink: 0;
+    }
+
+    /* ==========================================================================
+       4. 5TH CARD: 100% LIGHT FROSTED ICE-SILVER BUILDER + LIGHT PREVIEW BOX
+       ========================================================================== */
+    .custom-builder-card {
+      position: relative;
+      background: linear-gradient(140deg, rgba(255, 255, 255, 0.86) 0%, rgba(236, 240, 243, 0.82) 55%, rgba(255, 246, 228, 0.84) 100%);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1.5px dashed rgba(234, 170, 0, 0.65);
+      border-radius: 1.5rem;
+      box-shadow:
+        0 20px 50px -14px rgba(58, 15, 52, 0.11),
+        0 0 28px rgba(255, 158, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95);
+      overflow: hidden;
+    }
+
+    .preset-module-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.42rem;
+      padding: 0.48rem 0.78rem;
+      border-radius: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(58, 15, 52, 0.15);
+      color: #3A0F34;
+      cursor: pointer;
+      transition: all 0.22s ease;
+      user-select: none;
+      text-align: left;
+    }
+
+    @media (min-width: 640px) {
+      .preset-module-pill {
+        font-size: 0.73rem;
+        padding: 0.52rem 0.88rem;
+      }
+    }
+
+    .preset-module-pill:hover {
+      border-color: #FF9E00;
+      background: rgba(255, 248, 234, 0.96);
+      transform: translateY(-1px);
+    }
+
+    /* Active State: Warm Marigold + Frosted Light Glow (Strictly NO Dark Black Fill) */
+    .preset-module-pill.active {
+      background: linear-gradient(135deg, rgba(255, 158, 0, 0.24) 0%, rgba(255, 243, 214, 0.95) 100%);
+      border-color: #FF9E00;
+      color: #3A0F34;
+      font-weight: 600;
+      box-shadow: 0 5px 15px rgba(234, 170, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+
+    .self-type-textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(58, 15, 52, 0.2);
+      border-radius: 0.85rem;
+      padding: 0.82rem 0.95rem;
+      color: #3A0F34;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+      resize: vertical;
+    }
+
+    .self-type-textarea::placeholder {
+      color: rgba(82, 43, 76, 0.55);
+    }
+
+    .self-type-textarea:focus {
+      outline: none;
+      border-color: #FF9E00;
+      box-shadow: 0 0 0 3px rgba(255, 158, 0, 0.22);
+      background: #FFFFFF;
+    }
+
+    /* ==========================================================================
+       5. COMPACT FOUNDER SHIELD PHOTO UNSHEATHE (EXACT MATCH TO SCREENSHOT)
+       - Pentagon Shield Card (`sarthak.jpg`)
+       - Frosted Pocket Lip with NO TEXT inside
+       - ZERO buttons below pocket
+       ========================================================================== */
+    .pocket-stage {
+      position: relative;
+      width: 215px;
+      height: 270px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: 14px;
+    }
+
+    @media (min-width: 640px) {
+      .pocket-stage {
+        width: 246px;
+        height: 308px;
+        padding-bottom: 16px;
+      }
+    }
+
+    .pocket-back-wall {
+      position: absolute;
+      bottom: 0;
+      width: 204px;
+      height: 126px;
+      background: linear-gradient(180deg, #CFD7DE 0%, #BFC9D2 100%);
+      border: 1px solid rgba(58, 15, 52, 0.18);
+      border-radius: 1.15rem;
+      box-shadow: inset 0 8px 18px rgba(58, 15, 52, 0.14);
+      z-index: 1;
+    }
+
+    @media (min-width: 640px) {
+      .pocket-back-wall {
+        width: 236px;
+        height: 144px;
+      }
+    }
+
+    /* Warm Marigold + Aubergine Ambient Halo Behind Shield */
+    .shield-marigold-aura {
+      position: absolute;
+      top: 6px;
+      width: 195px;
+      height: 215px;
+      border-radius: 9999px;
+      background: radial-gradient(circle, rgba(255, 158, 0, 0.44) 0%, rgba(58, 15, 52, 0.16) 58%, transparent 76%);
+      filter: blur(18px);
+      opacity: 0;
+      transform: scale(0.72);
+      transition: opacity 0.85s ease, transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .pocket-stage.is-unsheathed .shield-marigold-aura {
+      opacity: 1;
+      transform: scale(1.08);
+    }
+
+    /* Compact Pentagon Shield Frame (184px x 228px mobile, 210px x 260px desktop) */
+    .shield-card-outer {
+      position: relative;
+      z-index: 3;
+      width: 184px;
+      height: 228px;
+      padding: 3.5px;
+      background: linear-gradient(145deg, #FF9E00 0%, #3A0F34 52%, #EAAA00 100%);
+      clip-path: polygon(0% 0%, 100% 0%, 100% 82%, 50% 100%, 0% 82%);
+      /* Initial Sheathed Position Inside Pocket */
+      transform: translateY(94px) scale(0.86);
+      opacity: 0.2;
+      filter: brightness(0.78);
+      transition:
+        transform 1.08s cubic-bezier(0.22, 1.38, 0.36, 1),
+        opacity 0.55s ease,
+        filter 0.65s ease;
+      will-change: transform, opacity;
+      cursor: pointer;
+    }
+
+    @media (min-width: 640px) {
+      .shield-card-outer {
+        width: 210px;
+        height: 260px;
+        transform: translateY(106px) scale(0.86);
+      }
+    }
+
+    /* Unsheathed Spring State on Scroll */
+    .pocket-stage.is-unsheathed .shield-card-outer {
+      transform: translateY(-16px) scale(1);
+      opacity: 1;
+      filter: brightness(1);
+    }
+
+    .shield-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: #E8EEF2;
+      clip-path: polygon(0% 0%, 100% 0%, 100% 82%, 50% 100%, 0% 82%);
+      overflow: hidden;
+    }
+
+    .shield-gloss-sweep {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 22%, rgba(255, 158, 0, 0.38) 50%, transparent 78%);
+      transform: translateX(-140%);
+      transition: transform 1.15s cubic-bezier(0.19, 1, 0.22, 1) 0.22s;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .pocket-stage.is-unsheathed .shield-gloss-sweep {
+      transform: translateX(140%);
+    }
+
+    /* Clean Frosted Pocket Lip at Bottom (Zero Text Inside, Zero Buttons Below) */
+    .pocket-front-lip {
+      position: absolute;
+      bottom: 0;
+      width: 212px;
+      height: 54px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, rgba(226, 232, 237, 0.96) 100%);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(58, 15, 52, 0.16);
+      border-top: 2.5px solid #FF9E00;
+      border-radius: 0.85rem 0.85rem 1.15rem 1.15rem;
+      box-shadow: 0 -8px 20px rgba(58, 15, 52, 0.1), 0 -2px 10px rgba(255, 158, 0, 0.2);
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    @media (min-width: 640px) {
+      .pocket-front-lip {
+        width: 244px;
+        height: 60px;
+      }
+    }
+
+    .pocket-rim-groove {
+      width: 44px;
+      height: 3px;
+      border-radius: 9999px;
+      background: linear-gradient(90deg, rgba(58, 15, 52, 0.12), rgba(255, 158, 0, 0.6), rgba(58, 15, 52, 0.12));
+    }
+
+    /* Scroll Reveal Utility */
+    .reveal-on-scroll {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal-on-scroll.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Minimalist Footer Icon Dock (5 Social Icons) */
+    .footer-icon-btn {
+      width: 2.95rem;
+      height: 2.95rem;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(58, 15, 52, 0.16);
+      color: #3A0F34;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(58, 15, 52, 0.08);
+      transition: all 0.3s cubic-bezier(0.22, 1.35, 0.36, 1);
+    }
+
+    @media (min-width: 640px) {
+      .footer-icon-btn {
+        width: 3.15rem;
+        height: 3.15rem;
+      }
+    }
+
+    .footer-icon-btn:hover {
+      transform: translateY(-4px) scale(1.07);
+      background: linear-gradient(135deg, #FFAE19 0%, #FF9E00 100%);
+      color: #230820;
+      border-color: #FF9E00;
+      box-shadow: 0 10px 24px rgba(234, 170, 0, 0.36);
+    }
+  </style>
+</head>
+
+<body class="antialiased relative">
+
+  <!-- ==========================================================================
+       SUBTLE EDITORIAL VERTICAL GRID LINES (ICE SILVER + AUBERGINE/MARIGOLD)
+       ========================================================================== -->
+  <div class="editorial-grid" aria-hidden="true">
+    <div class="editorial-col"><div class="marigold-beam"></div></div>
+    <div class="editorial-col"><div class="marigold-beam"></div></div>
+    <div class="editorial-col"><div class="marigold-beam"></div></div>
+    <div class="editorial-col"><div class="marigold-beam"></div></div>
+    <div class="editorial-col hidden md:block"><div class="marigold-beam"></div></div>
+    <div class="editorial-col hidden md:block"></div>
+  </div>
+
+  <!-- ==========================================================================
+       1. MOBILE-FIRST FLOATING NAVBAR (NO THEME TOGGLE BUTTON)
+       ========================================================================== -->
+  <header class="fixed top-0 left-0 right-0 z-50 px-3 sm:px-6 pt-2.5 sm:pt-4">
+    <nav class="max-w-6xl mx-auto rounded-full px-2.5 sm:px-5 py-2 sm:py-2.5 flex items-center justify-between border border-[#3A0F34]/14 backdrop-blur-xl shadow-[0_8px_26px_rgba(58,15,52,0.08)]"
+         style="background: rgba(242, 245, 248, 0.88);">
+      
+      <!-- Left: Capsule Logo with Pulsing Marigold Dot -->
+      <a href="#" class="astraa-capsule-logo focus:outline-none" aria-label="Tech Astraa Home">
+        <span class="logo-marigold-dot"></span>
+        <span class="inline-flex items-baseline gap-1.5">
+          <span class="font-display font-bold text-[11px] sm:text-sm tracking-[0.14em] uppercase text-white">TECH</span>
+          <span class="logo-stylized-astraa">Astraa</span>
+        </span>
+      </a>
+
+      <!-- Center: Desktop Navigation Links -->
+      <div class="hidden md:flex items-center gap-7 text-sm font-semibold text-[#3A0F34]">
+        <a href="#services" class="hover:text-[#C2410C] transition-colors">Systems</a>
+        <a href="#custom-builder" class="hover:text-[#C2410C] transition-colors">Custom Build</a>
+        <a href="#founder" class="hover:text-[#C2410C] transition-colors">Founder</a>
+      </div>
+
+      <!-- Right: Single Magnetic Marigold CTA Button -->
+      <a href="https://wa.me/919720328225?text=Hi%20Sarthak,%20I%20want%20to%20start%20a%20project%20with%20Tech%20Astraa."
+         target="_blank" rel="noopener noreferrer"
+         class="btn-marigold magnetic-btn ripple-btn !py-1.5 !px-3.5 sm:!py-2.5 sm:!px-5 text-xs sm:text-sm whitespace-nowrap">
+        <span>Start a Project</span>
+        <span class="arrow-slide" aria-hidden="true">→</span>
+      </a>
+
+    </nav>
+  </header>
+
+  <!-- ==========================================================================
+       2. CLEAN HERO SECTION (ZERO OVERLAPPING FLOATING PILLS)
+       ========================================================================== -->
+  <main class="relative z-10 pt-24 sm:pt-36 pb-16">
+    <section class="max-w-5xl mx-auto px-4 sm:px-6 text-center">
+      
+      <!-- Top Eyebrow Pill -->
+      <div class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-white/85 border border-[#3A0F34]/15 shadow-sm mb-5 sm:mb-8">
+        <span class="logo-marigold-dot !w-2 !h-2"></span>
+        <span class="font-mono text-[10px] sm:text-xs font-semibold uppercase tracking-[0.16em] text-[#3A0F34]">
+          AI • AUTOMATION • ANIMATED WEB
+        </span>
+      </div>
+
+      <!-- Responsive Staggered Split-Text Headline -->
+      <h1 class="hero-headline font-display font-bold max-w-4xl mx-auto mb-4 sm:mb-6">
+        <span class="word-mask"><span class="word-inner" style="transition-delay: 0.04s;">Automate</span></span>
+        <span class="word-mask"><span class="word-inner" style="transition-delay: 0.11s;">the</span></span>
+        <span class="word-mask"><span class="word-inner" style="transition-delay: 0.18s;">Grind.</span></span>
+        <br />
+        <span class="word-mask"><span class="word-inner serif-mixer-word text-[1.12em]" style="transition-delay: 0.26s;">Scale</span></span>
+        <span class="word-mask"><span class="word-inner" style="transition-delay: 0.34s;">Your</span></span>
+        <span class="word-mask"><span class="word-inner" style="transition-delay: 0.42s;">Business.</span></span>
+      </h1>
+
+      <!-- Natural, Human-Readable Sub-copy -->
+      <p class="text-sm sm:text-lg lg:text-xl text-[#522B4C] max-w-2xl mx-auto leading-relaxed mb-7 sm:mb-10 font-medium px-1">
+        Smart AI voice bots, automated WhatsApp flows, live dashboards, and high-converting animated websites built to save your time and multiply profits.
+      </p>
+
+      <!-- Hero Action Buttons -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-8 sm:mb-11">
+        <a href="https://wa.me/919720328225?text=Hi%20Sarthak,%20I%20want%20to%20book%20a%20free%20consultation%20for%20my%20business."
+           target="_blank" rel="noopener noreferrer"
+           class="btn-marigold magnetic-btn ripple-btn w-full sm:w-auto text-sm sm:text-base">
+          <span>Book Free Consultation</span>
+          <span class="arrow-slide" aria-hidden="true">→</span>
+        </a>
+
+        <a href="#custom-builder"
+           class="btn-aubergine-outline magnetic-btn ripple-btn w-full sm:w-auto text-sm sm:text-base">
+          <span>Custom Build Your Idea</span>
+          <span class="arrow-slide" aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      <!-- Clean Light Frosted Highlight Bar -->
+      <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+        <div class="rect-status-bubble">
+          <span class="marigold-dot-sm"></span>
+          <span>Custom Animated Websites</span>
+        </div>
+        <div class="rect-status-bubble">
+          <span class="marigold-dot-sm"></span>
+          <span>24/7 AI Calling Agents</span>
+        </div>
+        <div class="rect-status-bubble">
+          <span class="marigold-dot-sm"></span>
+          <span>1-Click Excel &amp; Sheets Dashboards</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==========================================================================
+         3. 4 CORE SERVICE CARDS (100% FROSTED ICE-SILVER PEARL GLASS + MIXER GLOW)
+         ========================================================================== -->
+    <section id="services" class="max-w-6xl mx-auto px-4 sm:px-6 pt-16 sm:pt-24">
+      
+      <div class="reveal-on-scroll text-center max-w-2xl mx-auto mb-8 sm:mb-14">
+        <span class="font-mono text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-[#C2410C] block mb-2">
+          CORE SYSTEMS
+        </span>
+        <h2 class="font-display font-bold text-2xl sm:text-4xl lg:text-5xl text-[#3A0F34] tracking-tight mb-2.5">
+          Simple Systems. <span class="serif-mixer-word text-[1.1em]">Massive</span> Output.
+        </h2>
+        <p class="text-xs sm:text-base text-[#522B4C] font-medium">
+          Practical tools built to automate your daily work and bring in more customers.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-7">
+        
+        <!-- CARD 01: AI Voice Calling Bots -->
+        <article class="service-card gyro-card flex flex-col justify-between reveal-on-scroll">
+          <div class="relative z-10">
+            <div class="flex items-center justify-between mb-5">
+              <div class="card-icon-frame">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z"/>
+                </svg>
+              </div>
+              <span class="card-number-badge">01 / VOICE AI</span>
+            </div>
+
+            <h3 class="font-display font-bold text-xl sm:text-2xl text-[#3A0F34] mb-2 tracking-tight">
+              AI Voice <span class="serif-mixer-word text-[1.12em]">Calling</span> Bots
+            </h3>
+            <p class="text-[#522B4C] text-xs sm:text-base leading-relaxed mb-5 font-medium">
+              24/7 automated phone calls that talk to your customers, book appointments, and follow up on leads in a natural voice.
+            </p>
+
+            <!-- 3 Rectangular Floating Status Bubbles -->
+            <div class="flex flex-wrap gap-1.5 sm:gap-2 mb-5">
+              <span class="rect-status-bubble">
+                <span class="marigold-dot-sm"></span>24/7 Auto-Calls
+              </span>
+              <span class="rect-status-bubble">
+                <span class="marigold-dot-sm"></span>Hindi + English
+              </span>
+              <span class="rect-status-bubble">
+                <span class="marigold-dot-sm"></span>Instant Lead Capture
+              </span>
+            </div>
+          </div>
+
+          <div class="relative z-10 pt-3.5 border-t border-[#3A0F34]/12 flex items-center justify-between">
+            <a href="https://wa.me/919720328225?text=Hi%20Sarthak,%20I%20want%20an%20AI%20Voice%20Calling%20Bot%20for%20my%20business."
+               target="_blank" rel="noopener noreferrer"
+               class="card-deploy-link inline-flex items-center gap-1.5 font-bold text-xs sm:text-sm text-[#3A0F34] hover:text-[#C2410C] transition">
+              <span>Deploy System</span>
+              <span class="arrow-slide text-[#FF9E00] font-bold">→</span>
+            </a>
+            <span class="font-mono text-[11px] text-[#522B4C]/80">10x Faster Outreach</span>
+          </div>
+        </article>
+
+        <!-- CARD 02: WhatsApp Automation -->
+        <article class="service-card gyro-card flex flex-col justify-between reveal-on-scroll">
+          <div class="relative z-10">
+            <div class="flex items-center justify-between mb-5">
+              <div class="card-icon-frame">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"/>
+                </svg>
+              </div>
+              <span class="card-number-badge">02 / WHATSAPP</span>
+            </div>
+
+            <h3 class="font-display font-bold text-xl sm:text-2xl text-[#3A0F34] mb-2 tracking-tight">
+              WhatsApp <span class="serif-mixer-word text-[1.12em]">Automation</span>
+            </h3>
+            <p class="text-[#522B4C] text-xs sm:text-base leading-relaxed mb-5 font-medium">
+              Automatic billing receipts, payment reminders, and instant smart replies directly on your customer's WhatsApp.
+            </p>
+
+            <!-- 3 Rectangular Floating Status Bubbles -->
+            <div class="flex flex-wrap gap-1.5 sm:gap-2 mb-5">
+              <span class="rect-status-bubble">
+                <span class="marigold-dot-sm"></span>Auto-Billing PDF
+              </span>
+              <span class="rect-status-bubble">
+                <span class="marigold-dot-sm"></span>Zero-Touch Replies
+              </span>
+              <span class="rect-status-bubble">
+                <span class="marigold-dot-sm"></span>Payment Reminders
+              </span>
+            </div>
+          </div>
+
+          <div class="relative z-10 pt-3.5 border-t border-[#3A0F34]/12 flex items-center justify-between">
+            <a href="https://wa.me/919720328225?text=Hi%20Sarthak,%20I%20want%20WhatsApp%20Automation%20for%20my%20business."
+               target="_blank" rel="noopener noreferrer"
+               class="card-deploy-link inline-flex items-center gap-1.5 font-bold text-xs sm:text-sm text-[#3A0F34] hover:text-[#C2410C] transition">
+              <span>Deploy System</span>
+              <span class="arrow-slide text-[#FF9E00] font-bold">→</span>
+            </a>
+            <span class="font-mono text-[11px] text-[#522B4C]/80">Zero Manual Work</span>
+          </div>
+        </article>
+
+        <!-- CARD 03: Dashboards & Animated Web -->
+        <article class="service-card gyro-card flex flex-col justify-between reveal-on-scroll">
+          <div class="relative z-10">
+            <div class="flex items-center justify-between mb-5">
+              <div class="card-icon-frame">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/>
+                </svg>
+              </div>
+              <span class="card-number-badge">03 / WEB &amp; DATA</span>
+            </div>
+
+            <h3 class="font-display font-bold text-xl sm:text-2xl text-[#3A0F34] mb-2 tracking-tight">
+              Dashboards &amp; <span class="serif-mixer-word text-[1.12em]">Animated</span> Web
+            </h3>
+            <p class="text-[#522B4C] text-xs sm:text-base leading-relaxed mb-5 font-medium">
+              One-click Excel &amp; Google Sheets dashboards to track daily sales, plus custom animated websites that win high-paying clients.
+            </p>
+
+            <!-- 3 Rectangular Floating Status Bubbles -->
+            <div class="flex flex-wrap gap-1.5 sm:gap-2 mb-5">
+              <span class="rect-status-bubble">
+                <span class="marigold-dot-sm"></span>Live Excel Sync
+              </span>
+              <span class="rect-status-bubble">
+                <span class="marigold-dot-sm"></span>60FPS Motion UI
+              </span>
+              <span class="rect-status-bubble">
+                <span class="marigold-dot-sm"></span>One-Click Reports
+              </span>
+            </div>
+          </div>
+
+          <div class="relative z-10 pt-3.5 border-t border-[#3A0F34]/12 flex items-center justify-between">
+            <a href="https://wa.me/919720328225?text=Hi%20Sarthak,%20I%20want%20a%20Custom%20Dashboard%20or%20Animated%20Website."
+               target="_blank" rel="noopener noreferrer"
+               class="card-deploy-link inline-flex items-center gap-1.5 font-bold text-xs sm:text-sm text-[#3A0F34] hover:text-[#C2410C] transition">
+              <span>Deploy System</span>
+              <span class="arrow-slide text-[#FF9E00] font-bold">→</span>
+            </a>
+            <span class="font-mono text-[11px] text-[#522B4C]/80">Live Telemetry</span>
+          </div>
+        </article>
+
+        <!-- CARD 04: Local Growth Engine (GBP) -->
+        <article class="service-card gyro-card flex flex-col justify-between reveal-on-scroll">
+          <div class="relative z-10">
+            <div class="flex items-center justify-between mb-5">
+              <div class="card-icon-frame">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
+                </svg>
+              </div>
+              <span class="card-number-badge">04 / DOMINANCE</span>
+            </div>
+
+            <h3 class="font-display font-bold text-xl sm:text-2xl text-[#3A0F34] mb-2 tracking-tight">
+              Local <span class="serif-mixer-word text-[1.12em]">Growth</span> Engine (GBP)
+            </h3>
+            <p class="text-[#522B4C] text-xs sm:text-base leading-relaxed mb-5 font-medium">
+              Complete Google Business Profile optimization and automated local SEO systems to rank #1 in local searches.
+            </p>
+
+            <!-- 3 Rectangular Floating Status Bubbles -->
+            <div class="flex flex-wrap gap-1.5 sm:gap-2 mb-5">
+              <span class="rect-status-bubble">
+                <span class="marigold-dot-sm"></span>#1 Local Search
+              </span>
+              <span class="rect-status-bubble">
+                <span class="marigold-dot-sm"></span>Google Maps Top 3
+              </span>
+              <span class="rect-status-bubble">
+                <span class="marigold-dot-sm"></span>Automated Reviews
+              </span>
+            </div>
+          </div>
+
+          <div class="relative z-10 pt-3.5 border-t border-[#3A0F34]/12 flex items-center justify-between">
+            <a href="https://wa.me/919720328225?text=Hi%20Sarthak,%20I%20want%20to%20rank%20my%20business%20%231%20on%20Google%20Maps%20(GBP)."
+               target="_blank" rel="noopener noreferrer"
+               class="card-deploy-link inline-flex items-center gap-1.5 font-bold text-xs sm:text-sm text-[#3A0F34] hover:text-[#C2410C] transition">
+              <span>Deploy System</span>
+              <span class="arrow-slide text-[#FF9E00] font-bold">→</span>
+            </a>
+            <span class="font-mono text-[11px] text-[#522B4C]/80">#1 Local Search</span>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- ========================================================================
+           4. 5TH CARD: 100% LIGHT FROSTED ICE-SILVER BUILDER + LIGHT PREVIEW BOX
+           ======================================================================== -->
+      <div id="custom-builder" class="mt-5 sm:mt-8 custom-builder-card gyro-card p-4 sm:p-9 lg:p-11 reveal-on-scroll">
+        <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+          
+          <!-- Left Column: Multi-Select Presets + Self-Type Input -->
+          <div class="lg:col-span-7 space-y-4 sm:space-y-5">
+            <div>
+              <div class="flex flex-wrap items-center gap-2 mb-3">
+                <span class="card-number-badge">05 / BESPOKE ARCHITECTURE</span>
+                <span class="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold text-[#C2410C]">
+                  <span class="marigold-dot-sm"></span>Custom Built Around Your Daily Operations
+                </span>
+              </div>
+
+              <h3 class="font-display font-bold text-xl sm:text-4xl text-[#3A0F34] mb-2 tracking-tight">
+                What Do You Want to <span class="serif-mixer-word text-[1.12em]">Build</span> for Your Business?
+              </h3>
+
+              <p class="text-[#522B4C] text-xs sm:text-base leading-relaxed font-medium">
+                Pick one or more preset modules below, or write your exact business problem in your own words—it goes straight to our WhatsApp.
+              </p>
+            </div>
+
+            <!-- Step 1: Multi-Select Preset Modules -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-mono text-[10px] sm:text-[11px] uppercase tracking-wider text-[#3A0F34] font-bold">
+                  1. TAP TO SELECT MODULES (ONE OR MULTIPLE):
+                </span>
+                <button type="button" id="resetBuilderBtn" class="font-mono text-[11px] text-[#522B4C] hover:text-[#C2410C] underline transition cursor-pointer">
+                  Reset Selection
+                </button>
+              </div>
+
+              <div class="flex flex-wrap gap-1.5 sm:gap-2">
+                <button type="button" class="preset-module-pill active" data-topic="AI Calling Bot (Political / Real Estate)">
+                  <span>📞</span><span>AI Calling Bot (Political / Real Estate)</span>
+                </button>
+                <button type="button" class="preset-module-pill" data-topic="Dairy / Inventory Billing System">
+                  <span>🥛</span><span>Dairy / Inventory Billing System</span>
+                </button>
+                <button type="button" class="preset-module-pill" data-topic="School & Coaching Automation">
+                  <span>🎓</span><span>School &amp; Coaching Automation</span>
+                </button>
+                <button type="button" class="preset-module-pill" data-topic="WhatsApp Auto-Reply & Store">
+                  <span>💬</span><span>WhatsApp Auto-Reply &amp; Store</span>
+                </button>
+                <button type="button" class="preset-module-pill" data-topic="Custom Excel / Sheets Dashboard">
+                  <span>📊</span><span>Custom Excel / Sheets Dashboard</span>
+                </button>
+                <button type="button" class="preset-module-pill" data-topic="High-End Animated Website">
+                  <span>✨</span><span>High-End Animated Website</span>
+                </button>
+                <button type="button" class="preset-module-pill" data-topic="Google Map #1 Rank Setup">
+                  <span>📍</span><span>Google Map #1 Rank Setup</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Step 2: Self-Type Custom Requirement Textarea -->
+            <div>
+              <label for="selfTypeInput" class="font-mono text-[10px] sm:text-[11px] uppercase tracking-wider text-[#3A0F34] font-bold block mb-2">
+                2. OR WRITE YOUR OWN REQUIREMENT / IDEA HERE (SELF-TEXT):
+              </label>
+              <textarea
+                id="selfTypeInput"
+                rows="3"
+                class="self-type-textarea"
+                placeholder="Write your exact business requirement or idea here... (e.g. Mujhe apni dukan/agency ke liye automatic billing aur WhatsApp reminder system banwana hai)"></textarea>
+            </div>
+          </div>
+
+          <!-- Right Column: Light Frosted Pearl Glass WhatsApp Live Preview & Send Button -->
+          <div class="lg:col-span-5 w-full bg-white/85 border border-[#FF9E00]/45 rounded-2xl p-4 sm:p-6 flex flex-col justify-between shadow-[0_14px_34px_rgba(58,15,52,0.09)] backdrop-blur-xl">
+            <div>
+              <div class="flex items-center justify-between border-b border-[#3A0F34]/12 pb-2.5 mb-3">
+                <div class="flex items-center gap-2">
+                  <span class="marigold-dot-sm"></span>
+                  <span class="font-mono text-[11px] uppercase tracking-wider font-bold text-[#3A0F34]">
+                    WHATSAPP MESSAGE PREVIEW
+                  </span>
+                </div>
+                <span class="font-mono text-[11px] font-semibold text-[#C2410C]">Instant Sync</span>
+              </div>
+
+              <div class="bg-[#F4F7F9] border border-[#3A0F34]/14 rounded-xl p-3.5 sm:p-4 mb-4 min-h-[118px] flex flex-col justify-between shadow-inner">
+                <p id="whatsappLivePreview" class="text-xs sm:text-sm text-[#3A0F34] font-medium leading-relaxed whitespace-pre-line font-sans">
+                  Hi Sarthak, I want to build:
+• AI Calling Bot (Political / Real Estate)
+                </p>
+                <span class="font-mono text-[10px] text-[#522B4C]/75 mt-3 block text-right">
+                  Direct to Tech Astraa WhatsApp ✓✓
+                </span>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <a id="sendCustomWhatsappBtn"
+                 href="https://wa.me/919720328225?text=Hi%20Sarthak%2C%20I%20want%20to%20build%3A%0A%E2%80%A2%20AI%20Calling%20Bot%20(Political%20%2F%20Real%20Estate)"
+                 target="_blank" rel="noopener noreferrer"
+                 class="btn-marigold magnetic-btn ripple-btn w-full text-center justify-center text-sm sm:text-base">
+                <span>Send Requirement on WhatsApp</span>
+                <span class="arrow-slide" aria-hidden="true">→</span>
+              </a>
+              <p class="font-mono text-[10px] sm:text-[11px] text-center text-[#522B4C]/80">
+                Opens WhatsApp with your exact selected &amp; typed message.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==========================================================================
+         5. COMPACT FOUNDER SECTION — EXACT MATCH TO USER'S SCREENSHOT
+         - Direct `src="sarthak.jpg"` image tag inside Pentagon Shield
+         - Clean frosted pocket lip with ZERO text inside
+         - ZERO buttons below pocket (Replay Reveal & Load Photo completely gone)
+         - Strictly NO Email next to Sarthak's name
+         ========================================================================== -->
+    <section id="founder" class="max-w-5xl mx-auto px-4 sm:px-6 pt-16 sm:pt-24 pb-8">
+      
+      <div class="service-card gyro-card reveal-on-scroll !p-5 sm:!p-10 lg:!p-12">
+        <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-7 lg:gap-10 items-center">
+          
+          <!-- Left: Compact Pentagon Shield Photo Badge inside Clean Frosted Pocket -->
+          <div class="md:col-span-5 flex flex-col items-center justify-center">
+            
+            <div id="founderPocketStage" class="pocket-stage">
+              <div class="pocket-back-wall"></div>
+              <div class="shield-marigold-aura"></div>
+
+              <!-- Shield Photo Card -->
+              <div id="founderShieldBox" class="shield-card-outer group">
+                <div class="shield-card-inner">
+                  <div class="shield-gloss-sweep"></div>
+
+                  <img
+                    id="founderImg"
+                    src="sarthak.png"
+                    alt="Sarthak – Founder of Tech Astraa"
+                    class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
+              </div>
+
+              <!-- Clean Frosted Pocket Sleeve at Bottom (No Text, No Buttons Below) -->
+              <div class="pocket-front-lip">
+                <div class="pocket-rim-groove"></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right: Clean Founder Copy (Strictly NO Email next to Name) -->
+          <div class="md:col-span-7 text-center md:text-left space-y-3.5 sm:space-y-4">
+            
+            <div>
+              <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-[#522B4C] font-semibold mb-1">
+                MEET THE MIND BEHIND TECH ASTRAA
+              </p>
+              <h3 class="font-display font-bold text-3xl sm:text-5xl text-[#3A0F34] tracking-tight">
+                Sarthak
+              </h3>
+            </div>
+
+            <p class="text-lg sm:text-2xl text-[#3A0F34] font-semibold leading-snug">
+              “Turning manual work into <span class="serif-mixer-word text-[1.14em]">automated</span> growth.”
+            </p>
+
+            <p class="text-[#522B4C] text-xs sm:text-base leading-relaxed font-medium">
+              I build practical AI voice agents, automated WhatsApp pipelines, and high-converting animated websites for ambitious business owners. Every system is custom-engineered to save hours of daily effort and scale your revenue cleanly.
+            </p>
+
+            <!-- 4 Skill Pills -->
+            <div class="flex flex-wrap justify-center md:justify-start gap-1.5 sm:gap-2 pt-1">
+              <span class="rect-status-bubble">
+                <span class="marigold-dot-sm"></span>AI Voice Systems
+              </span>
+              <span class="rect-status-bubble">
+                <span class="marigold-dot-sm"></span>WhatsApp Engines
+              </span>
+              <span class="rect-status-bubble">
+                <span class="marigold-dot-sm"></span>Custom Dashboards
+              </span>
+              <span class="rect-status-bubble">
+                <span class="marigold-dot-sm"></span>Animated Web
+              </span>
+            </div>
+
+            <div class="pt-2">
+              <a href="https://wa.me/919720328225?text=Hi%20Sarthak,%20let's%20discuss%20automating%20my%20business."
+                 target="_blank" rel="noopener noreferrer"
+                 class="btn-marigold magnetic-btn ripple-btn text-sm sm:text-base w-full sm:w-auto">
+                <span>Connect With Sarthak</span>
+                <span class="arrow-slide" aria-hidden="true">→</span>
+              </a>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- ==========================================================================
+       6. CLEAN FROSTED FOOTER WITH 5 SOCIAL ICONS (INCLUDING TELEGRAM)
+       ========================================================================== -->
+  <footer class="relative z-10 border-t border-[#3A0F34]/12 bg-[#E4E9EE]/80 backdrop-blur-md py-10 px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto flex flex-col items-center justify-center text-center">
+      
+      <!-- 5 Sleek Social Icons (Instagram, Snapchat, Telegram, WhatsApp, Email) -->
+      <div class="flex flex-wrap items-center justify-center gap-3.5 sm:gap-5 mb-4">
+        
+        <!-- 1. Instagram: techastraa -->
+        <a href="https://instagram.com/techastraa"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Instagram"
+           title="Instagram (@techastraa)"
+           class="footer-icon-btn">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+        </a>
+
+        <!-- 2. Snapchat: tech.astra -->
+        <a href="https://snapchat.com/add/tech.astra"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Snapchat"
+           title="Snapchat (@tech.astra)"
+           class="footer-icon-btn">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12.166 3c.796 0 3.495.223 4.769 2.963.448.963.393 2.593.294 3.882l-.021.258c-.01.147.079.289.222.345.367.145.803.261 1.186.364.39.104.677.382.739.73.068.382-.152.771-.582.976-.654.311-1.391.503-1.825.616-.255.067-.418.234-.441.448-.026.245.146.544.366.878.65 1.01 1.662 2.248 3.249 2.617.392.091.658.423.626.803-.035.42-.437.767-1.055.902-.813.177-1.576.298-2.095.38-.423.067-.685.228-.788.647-.145.59-.551 1.186-1.484 1.186-.631 0-1.261-.263-1.991-.568-.69-.288-1.472-.615-2.335-.615-.863 0-1.645.327-2.335.615-.73.305-1.36.568-1.991.568-.933 0-1.339-.596-1.484-1.186-.103-.419-.365-.58-.788-.647-.519-.082-1.282-.203-2.095-.38-.618-.135-1.02-.482-1.055-.902-.032-.38.234-.712.626-.803 1.587-.369 2.599-1.607 3.249-2.617.22-.334.392-.633.366-.878-.023-.214-.186-.381-.441-.448-.434-.113-1.171-.305-1.825-.616-.43-.205-.65-.594-.582-.976.062-.348.349-.626.739-.73.383-.103.819-.219 1.186-.364.143-.056.232-.198.222-.345l-.021-.258c-.099-1.289-.154-2.919.294-3.882C8.671 3.223 11.37 3 12.166 3z"/>
+          </svg>
+        </a>
+
+        <!-- 3. Telegram: techastraa -->
+        <a href="https://t.me/techastraa"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="Telegram"
+           title="Telegram (@techastraa)"
+           class="footer-icon-btn">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+          </svg>
+        </a>
+
+        <!-- 4. WhatsApp: +91 9720328225 -->
+        <a href="https://wa.me/919720328225"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="WhatsApp"
+           title="WhatsApp (+91 9720328225)"
+           class="footer-icon-btn">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12.031 2c-5.516 0-9.969 4.453-9.969 9.969 0 1.766.469 3.484 1.359 5.016L2 22l5.156-1.359c1.484.813 3.172 1.25 4.875 1.25 5.516 0 9.969-4.453 9.969-9.969S17.547 2 12.031 2zm5.813 14.125c-.25.703-1.438 1.344-2 1.422-.531.078-1.203.109-1.938-.125-.453-.141-1.031-.344-1.766-.656-3.094-1.344-5.109-4.469-5.266-4.672-.156-.203-1.266-1.688-1.266-3.219 0-1.531.797-2.281 1.078-2.594.281-.313.609-.391.813-.391.203 0 .406.016.578.016.188 0 .438-.078.688.516.25.609.859 2.094.938 2.25.078.156.125.344.031.547-.094.203-.141.328-.297.5-.156.172-.313.391-.453.516-.141.141-.297.297-.125.594.172.297.766 1.266 1.641 2.047 1.125 1 2.078 1.313 2.375 1.469.297.156.469.125.641-.078.172-.203.75-.875.953-1.172.203-.297.406-.25.688-.156.281.094 1.781.844 2.094 1 .313.156.516.234.594.359.078.125.078.734-.172 1.438z"/>
+          </svg>
+        </a>
+
+        <!-- 5. Email: sarthakyadav8225@gmail.com -->
+        <a href="mailto:sarthakyadav8225@gmail.com"
+           aria-label="Email"
+           title="Email (sarthakyadav8225@gmail.com)"
+           class="footer-icon-btn">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>
+          </svg>
+        </a>
+
+      </div>
+
+      <!-- Copyright Line -->
+      <p class="text-[#522B4C]/80 text-xs sm:text-sm font-medium tracking-wide">
+        &copy; 2026 All Rights Reserved.
+      </p>
+
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       CLEAN INTERACTIVE JAVASCRIPT ENGINE (NO PHOTO OVERRIDES / NO LOCALSTORAGE)
+       ========================================================================== -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Trigger Split-Text Hero Reveal
+      setTimeout(() => {
+        document.body.classList.add('is-loaded');
+      }, 60);
+
+      // 2. 5th Card: Multi-Select Presets + Self-Type Live WhatsApp Sync
+      const presetPills = document.querySelectorAll('.preset-module-pill');
+      const resetBuilderBtn = document.getElementById('resetBuilderBtn');
+      const selfTypeInput = document.getElementById('selfTypeInput');
+      const livePreview = document.getElementById('whatsappLivePreview');
+      const sendBtn = document.getElementById('sendCustomWhatsappBtn');
+
+      function syncWhatsappMessage() {
+        const chosen = [];
+        presetPills.forEach((pill) => {
+          if (pill.classList.contains('active')) {
+            const topic = pill.getAttribute('data-topic');
+            if (topic) chosen.push(topic);
+          }
+        });
+
+        const typedText = selfTypeInput ? selfTypeInput.value.trim() : '';
+        let message = 'Hi Sarthak, I want to build a custom solution with Tech Astraa.';
+
+        if (chosen.length > 0 && typedText.length > 0) {
+          const list = chosen.map((item) => `• ${item}`).join('\n');
+          message = `Hi Sarthak, I want to build:\n${list}\n\nMy Custom Requirement:\n"${typedText}"`;
+        } else if (chosen.length > 0) {
+          const list = chosen.map((item) => `• ${item}`).join('\n');
+          message = `Hi Sarthak, I want to build:\n${list}`;
+        } else if (typedText.length > 0) {
+          message = `Hi Sarthak, here is what I want to build for my business:\n"${typedText}"`;
+        }
+
+        if (livePreview) livePreview.textContent = message;
+        if (sendBtn) {
+          sendBtn.setAttribute('href', `https://wa.me/919720328225?text=${encodeURIComponent(message)}`);
+        }
+      }
+
+      presetPills.forEach((pill) => {
+        pill.addEventListener('click', () => {
+          pill.classList.toggle('active');
+          syncWhatsappMessage();
+        });
+      });
+
+      if (resetBuilderBtn) {
+        resetBuilderBtn.addEventListener('click', () => {
+          presetPills.forEach((pill) => pill.classList.remove('active'));
+          if (selfTypeInput) selfTypeInput.value = '';
+          syncWhatsappMessage();
+        });
+      }
+
+      if (selfTypeInput) {
+        selfTypeInput.addEventListener('input', syncWhatsappMessage);
+      }
+
+      syncWhatsappMessage();
+
+      // 3. Automatic Scroll-Triggered Founder Pocket Unsheathe Animation
+      const pocketStage = document.getElementById('founderPocketStage');
+
+      if (pocketStage) {
+        const pocketObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              pocketStage.classList.add('is-unsheathed');
+            } else if (entry.boundingClientRect.top > 120) {
+              pocketStage.classList.remove('is-unsheathed');
+            }
+          });
+        }, { threshold: 0.25 });
+
+        pocketObserver.observe(pocketStage);
+      }
+
+      // 4. General Scroll Reveal for Cards & Sections
+      const revealItems = document.querySelectorAll('.reveal-on-scroll');
+      const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      }, { threshold: 0.12 });
+
+      revealItems.forEach((el) => revealObserver.observe(el));
+
+      // 5. Desktop-Only 3D Tilt & Cursor Marigold Spotlight
+      const isFinePointer = window.matchMedia('(pointer: fine)').matches;
+
+      if (isFinePointer) {
+        const gyroCards = document.querySelectorAll('.gyro-card');
+        gyroCards.forEach((card) => {
+          card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            card.style.setProperty('--spot-x', `${x}px`);
+            card.style.setProperty('--spot-y', `${y}px`);
+
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = ((y - centerY) / centerY) * -3.2;
+            const rotateY = ((x - centerX) / centerX) * 3.2;
+
+            card.style.transform = `perspective(950px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-3px)`;
+          });
+
+          card.addEventListener('mouseleave', () => {
+            card.style.transform = 'perspective(950px) rotateX(0deg) rotateY(0deg) translateY(0px)';
+          });
+        });
+
+        const magneticBtns = document.querySelectorAll('.magnetic-btn');
+        magneticBtns.forEach((btn) => {
+          btn.addEventListener('mousemove', (e) => {
+            const rect = btn.getBoundingClientRect();
+            const relX = e.clientX - (rect.left + rect.width / 2);
+            const relY = e.clientY - (rect.top + rect.height / 2);
+            btn.style.transform = `translate3d(${(relX * 0.12).toFixed(1)}px, ${(relY * 0.16).toFixed(1)}px, 0)`;
+          });
+          btn.addEventListener('mouseleave', () => {
+            btn.style.transform = 'translate3d(0px, 0px, 0)';
+          });
+        });
+      }
+
+      // 6. Touch & Click Ripple Wave on Buttons
+      const rippleBtns = document.querySelectorAll('.ripple-btn');
+      rippleBtns.forEach((btn) => {
+        btn.addEventListener('click', function(e) {
+          const rect = this.getBoundingClientRect();
+          const circle = document.createElement('span');
+          const diameter = Math.max(rect.width, rect.height);
+          const radius = diameter / 2;
+
+          circle.style.width = circle.style.height = `${diameter}px`;
+          circle.style.left = `${e.clientX - rect.left - radius}px`;
+          circle.style.top = `${e.clientY - rect.top - radius}px`;
+          circle.classList.add('ripple-wave');
+
+          const prev = this.querySelector('.ripple-wave');
+          if (prev) prev.remove();
+          this.appendChild(circle);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
